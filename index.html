@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=no">
+  <title>🌿 숲속 두더지 잡기 - 귀여운 캐주얼 미니게임</title>
+  <meta name="description" content="숲속 정원에 나타난 귀여운 5종류의 두더지를 잡아보세요! 30초 동안 펼쳐지는 5x5 캐주얼 두더지 잡기 게임">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 배경 데코레이션 (구름, 나뭇잎, 꽃) -->
+  <div class="nature-bg-decor" aria-hidden="true">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="floating-leaf leaf-1">🍃</div>
+    <div class="floating-leaf leaf-2">🌿</div>
+    <div class="floating-leaf leaf-3">🌸</div>
+    <div class="floating-leaf leaf-4">🍄</div>
+  </div>
+
+  <main class="game-container">
+    <!-- 헤더 영역 -->
+    <header class="game-header">
+      <div class="title-badge">Forest Whack-A-Mole</div>
+      <h1 class="main-title">🌿 숲속 두더지 잡기</h1>
+      <p class="subtitle">숲속에 나타난 장난꾸러기 두더지들을 콕콕 잡아보세요!</p>
+    </header>
+
+    <!-- 스코어보드 & 상태 바 -->
+    <section class="status-panel" aria-label="게임 현황">
+      <div class="status-card score-card">
+        <span class="card-icon">🎯</span>
+        <div class="card-info">
+          <span class="card-label">현재 점수</span>
+          <span class="card-value" id="currentScore">0</span>
+        </div>
+      </div>
+
+      <div class="status-card time-card" id="timeCard">
+        <span class="card-icon">⏱️</span>
+        <div class="card-info">
+          <span class="card-label">남은 시간</span>
+          <span class="card-value" id="timeLeft">30s</span>
+        </div>
+      </div>
+
+      <div class="status-card best-card">
+        <span class="card-icon">👑</span>
+        <div class="card-info">
+          <span class="card-label">최고 점수</span>
+          <span class="card-value" id="highScore">0</span>
+        </div>
+      </div>
+
+      <button id="soundToggleBtn" class="sound-toggle-btn" aria-label="효과음 켜기/끄기" title="효과음 켜기/끄기">
+        <span class="sound-icon" id="soundIcon">🔊</span>
+        <span class="sound-label" id="soundLabel">소리 켬</span>
+      </button>
+    </section>
+
+    <!-- 5x5 게임 정원 필드 -->
+    <section class="garden-field-wrapper">
+      <div class="garden-field" id="gardenGrid" role="grid" aria-label="5x5 두더지 게임판">
+        <!-- JS로 25개의 구멍이 동적으로 생성됩니다 -->
+      </div>
+      
+      <!-- 파티클 & 플로팅 텍스트 레이어 -->
+      <div class="effect-layer" id="effectLayer" aria-hidden="true"></div>
+    </section>
+
+    <!-- 컨트롤 & 점수 도감 -->
+    <section class="game-bottom">
+      <div class="main-action">
+        <button id="startBtn" class="cute-btn primary-btn">
+          <span class="btn-icon">🌱</span>
+          <span class="btn-text">게임 시작하기!</span>
+        </button>
+      </div>
+
+      <!-- 두더지 종류별 점수표 -->
+      <div class="mole-guide-card">
+        <div class="guide-header">
+          <span class="guide-title">📖 숲속 두더지 도감 & 점수표</span>
+        </div>
+        <div class="mole-guide-list">
+          <div class="guide-item normal">
+            <div class="mini-mole-preview preview-normal"></div>
+            <div class="guide-meta">
+              <span class="guide-name">일반 두더지</span>
+              <span class="guide-score">+10점</span>
+            </div>
+          </div>
+          <div class="guide-item beige">
+            <div class="mini-mole-preview preview-beige"></div>
+            <div class="guide-meta">
+              <span class="guide-name">베이지 두더지</span>
+              <span class="guide-score">+15점</span>
+            </div>
+          </div>
+          <div class="guide-item mushroom">
+            <div class="mini-mole-preview preview-mushroom"></div>
+            <div class="guide-meta">
+              <span class="guide-name">버섯 두더지</span>
+              <span class="guide-score">+20점</span>
+            </div>
+          </div>
+          <div class="guide-item flower">
+            <div class="mini-mole-preview preview-flower"></div>
+            <div class="guide-meta">
+              <span class="guide-name">꽃 두더지</span>
+              <span class="guide-score">+25점</span>
+            </div>
+          </div>
+          <div class="guide-item golden">
+            <div class="mini-mole-preview preview-golden"></div>
+            <div class="guide-meta">
+              <span class="guide-name">황금 두더지</span>
+              <span class="guide-score special">+50점!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 게임 시작 안내 모달 (첫 방문) -->
+  <div class="modal-overlay" id="introModal">
+    <div class="cute-modal intro-modal-card">
+      <div class="modal-decor-deco">🌲🌻🌲</div>
+      <div class="modal-character-hero preview-hero">
+        <!-- 귀여운 히어로 두더지 일러스트 -->
+      </div>
+      <h2 class="modal-title">숲속 정원에 어서오세요!</h2>
+      <p class="modal-desc">
+        따뜻한 햇살 아래, 숲속 친구 두더지들이 쏙쏙 고개를 내밀어요.<br>
+        <strong>30초</strong> 동안 빠르게 나타나는 두더지들을 콕콕 눌러보세요!
+      </p>
+      <div class="intro-tips">
+        <div class="tip-badge">✨ 황금 두더지는 놓치지 마세요 (+50점!)</div>
+        <div class="tip-badge">⚡ 한 번 누른 두더지는 쏙 숨어버려요</div>
+      </div>
+      <button id="modalStartBtn" class="cute-btn modal-btn">
+        <span>🎮 게임 시작하기</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 게임 종료 결과 모달 -->
+  <div class="modal-overlay hidden" id="gameOverModal">
+    <div class="cute-modal gameover-modal-card">
+      <div class="confetti-holder" id="modalConfetti"></div>
+      <div class="finish-stamp">TIME'S UP!</div>
+      <div class="result-character-hero" id="resultHero">
+        <!-- 점수별 캐릭터 표정 -->
+      </div>
+      <h2 class="modal-title" id="gameResultTitle">게임 종료!</h2>
+      <p class="modal-desc" id="gameResultDesc">오늘도 숲속 정원은 아주 평화로워요~</p>
+
+      <div class="score-summary-box">
+        <div class="summary-row">
+          <span class="summary-label">최종 획득 점수</span>
+          <span class="summary-value highlight" id="finalScoreDisplay">0점</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">최고 기록</span>
+          <span class="summary-value" id="finalHighScoreDisplay">0점</span>
+        </div>
+        <div class="new-record-tag hidden" id="newRecordTag">🎉 와우! 새로운 최고 기록 달성! 🎉</div>
+      </div>
+
+      <div class="modal-stats-grid" id="moleCatchStats">
+        <!-- 종류별 잡은 마리수 요약 -->
+      </div>
+
+      <button id="restartBtn" class="cute-btn modal-btn">
+        <span>🔄 다시 플레이하기</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
